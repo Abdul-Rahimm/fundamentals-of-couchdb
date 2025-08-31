@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import nano from "nano";
+import nano, { MangoQuery, MangoSelector } from "nano";
 
 // Configure connection to CouchDB
 const couchUrl = "http://admin:password@localhost:5984"; // Update with your credentials
@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Add GET method to your existing route.ts file
 export async function GET(request: NextRequest) {
   try {
     await ensureDbExists();
@@ -40,8 +39,8 @@ export async function GET(request: NextRequest) {
     const crime = searchParams.get("crime");
     const sentenceYear = searchParams.get("sentenceYear");
 
-    // Build selector for Mango query
-    const selector: Record<string, any> = {};
+    // Build selector for Mango query using the correct types
+    const selector: MangoSelector = {};
 
     if (criminalName) {
       selector.criminalName = { $regex: `(?i)${criminalName}` };
@@ -58,7 +57,7 @@ export async function GET(request: NextRequest) {
     // Query the database
     let records;
     if (Object.keys(selector).length > 0) {
-      const query = {
+      const query: MangoQuery = {
         selector,
         limit: 100,
       };
